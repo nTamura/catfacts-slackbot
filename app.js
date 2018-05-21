@@ -47,3 +47,10 @@ bot.on('message', function(data) {
   }
 
 });
+
+
+// references
+// https://code.tutsplus.com/articles/building-a-slack-bot-using-nodejs--cms-29444
+// https://api.slack.com/events/app_mention
+// https://slackapi.github.io/node-slack-sdk/rtm_api
+// https://scotch.io/tutorials/building-a-slack-bot-with-node-js-and-chuck-norris-super-powers
