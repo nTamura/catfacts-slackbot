@@ -1,5 +1,3 @@
-// 'use strict';
-
 require('dotenv').config()
 
 const Bot = require('slackbots')
@@ -9,44 +7,110 @@ const settings = {
   token: process.env.TOKEN,
   name: 'Catfacts'
 }
-const params = {
-    icon_emoji: ':cf:'
-  };
+
+const params = { icon_emoji: ':cf:'};
+const channel = 'testing'
+const bot = new Bot(settings)
+
+const openers = [
+  '',
+  'Did you know... ',
+  'Catfact of the day! ',
+  'Meow! ',
+  'By the way... ',
+  'Here is my favorite! ',
+  'Strangely enough, ',
+  'Listen to this one... ',
+  'Haha! ',
+  'This is good. ',
+  'So many to choose from... ',
+  'Hmmm... ',
+  'Pawleaseee, ',
+  'This is true. ',
+  'I am fur real. ',
+  'This is a purrfect fact! ',
+  'Hissterical! ',
+  'Paws what you are doing and listen to this. ',
+  'You gotta be kitten me... ',
+  'Meow meow. ',
+  'Cat. I\'m a kitty cat. ',
+  '',
+  '',
+]
+
+let randOpen = () => {
+ return openers[Math.floor(Math.random()*openers.length)]
+}
 
 let randomFact = catFacts.random();
 let allFacts = catFacts.all;
 
-const bot = new Bot(settings)
-
-// bot.on('start', function() {
-//   console.log('Catfacts server running...');
-//   // console.log(bot.getUsers())
-//   // bot.postMessageToUser('ntamura', randomFact, params);
-//   // bot.postMessageToChannel('', randomFact, params);
-//   // bot.postMessageToGroup('testing', randomFact, params);
-// })
-
-bot.on('message', function(data) {
-  if (data.type === "desktop_notification") {
-    let text = data.content
-    let arg = /([\/])\w+/.exec(text);
-
-    if (arg[0]) {
-      switch(arg[0]) {
-        case "/facts":
-          // console.log('/fact!');
-          bot.postMessageToGroup('testing', randomFact, params);
-          break;
-        default:
-          console.log('default');
-      }
-    } else {
-      console.log('error');
-    }
-
+const getTime = () => {
+  let time = new Date().toLocaleTimeString()
+  let day = new Date().getDay()
+  // if ((time.includes('13:10')) && (day === 2)) {
+  if ((time.includes('13:00')) && (day === 6)) {
+    bot.postMessageToGroup(channel, `Happy Caturday! ${randomFact}`, params)
   }
+}
 
+const handleMessage = (msg) => {
+  if (msg.split(' ').length === 1) {
+    bot.postMessageToGroup(channel, 'Meow?', params);
+  } else if (msg.includes(' fact')) {
+    bot.postMessageToGroup(channel, randOpen() + randomFact, params);
+  } else if (msg.includes(' help')) {
+    bot.postMessageToGroup(channel, 'You can <@BB1EN3BNC> + "fact" to hear a random fact. Bot will also run every Sunday at 1PM.', params);
+  } else {
+    bot.postMessageToGroup(channel, 'No idea what you mean right meow. try typing "fact"', params);
+  }
+}
+
+bot.on('start', () => {
+  console.log('Catfacts server running');
+  bot.postMessageToGroup(
+    channel,
+    `You have been subscribed to @catfacts! ${randomFact}`,
+     params
+   );
+  setInterval(getTime, 60000);
+
+  // console.log(bot.getUsers())
+  // bot.postMessageToUser('ntamura', randomFact, params);
+  // bot.postMessageToChannel('general', randomFact, params);
+  // bot.postMessageToGroup('testing', randomFact, params);
+})
+
+
+bot.on('message', (data) => {
+
+  if (data.type === 'message' && data.text.includes('<@UB25RGRGS>')) {
+    handleMessage(data.text)
+    console.log(data);
+  }
+  // if (data.type === "desktop_notification") {
+  //   let text = data.content
+  //   let arg = /([\/])\w+/.exec(text);
+  //   if (arg[0]) {
+  //     switch(arg[0]) {
+  //       case "/facts":
+  //         // console.log('/fact!');
+  //         bot.postMessageToGroup('testing', randomFact, params);
+  //         break;
+  //       default:
+  //         console.log('default');
+  //     }
+  //   } else {
+  //     console.log('error');
+  //   }
+  //
+  // }
 });
+
+
+bot.on('error', (err) => {
+  console.log(err);
+})
 
 
 // references
