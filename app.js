@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const Bot = require('slackbots')
 const catFacts = require('cat-facts');
+const openers = require('./openers');
 
 const settings = {
   token: process.env.TOKEN,
@@ -9,34 +10,11 @@ const settings = {
 }
 
 const bot = new Bot(settings)
-const params = { icon_emoji: ':cf:'};
+const params = {
+  icon_emoji: ':cf:',
+  link_names: true
+};
 const channel = 'testing'
-
-const openers = [
-  '',
-  'Did you know... ',
-  'Catfact of the day! ',
-  'Meow! ',
-  'By the way... ',
-  'Here is my favorite! ',
-  'Strangely enough, ',
-  'Listen to this one... ',
-  'Haha! ',
-  'This is good. ',
-  'So many to choose from... ',
-  'Hmmm... ',
-  'Pawleaseee, ',
-  'This is true. ',
-  'I am fur real. ',
-  'This is a purrfect fact! ',
-  'Hissterical! ',
-  'Paws what you are doing and listen to this. ',
-  'You gotta be kitten me... ',
-  'Meow meow. ',
-  'Cat. I\'m a kitty cat. ',
-  '',
-  '',
-]
 
 let randOpen = () => {
  return openers[Math.floor(Math.random()*openers.length)]
@@ -54,13 +32,37 @@ const getTime = () => {
   }
 }
 
-const handleMessage = (msg) => {
+const handleMessage = (data) => {
+  // console.log(data);
+  console.log(data.getUser() );
+  let userID = data.user
+
+  // const postMessageToUserById = async (userID, 'message', params) => {
+  //   const { channel: { id: channelID } } = await bot.openIm(userID);
+  //   bot.postMessage(channelID, 'message', opts)
+  // }
+
+  // bot.openIm(data.user)
+  // .then(() => {
+  //   bot.postMessage(data.user, 'hi')
+  // })
+  console.log(bot.getUsers());
+
+  let msg = data.text
   if (msg.split(' ').length === 1) {
     bot.postMessageToGroup(channel, 'Meow?', params);
   } else if (msg.includes(' fact')) {
     bot.postMessageToGroup(channel, randOpen() + catFacts.random(), params);
+  } else if (msg.includes(' dm')) {
+
+    // bot.postMessageToUser(data.user, catFacts.random(), params);
+
+    bot.postMessageToUser(data.user, 'hi')
+      .always((data) => {
+        // console.log(data);
+    })
   } else if (msg.includes(' help')) {
-    bot.postMessageToGroup(channel, 'You can <@BB1EN3BNC> + "fact" to hear a random fact. Bot will also run every Sunday at 1PM.', params);
+    bot.postMessageToGroup(channel, 'You can @catfacts + "fact" to hear a random fact. Bot will also run every Sunday at 1PM.', params);
   } else {
     bot.postMessageToGroup(channel, 'No idea what you mean right meow. try typing "fact"', params);
   }
@@ -85,8 +87,7 @@ bot.on('start', () => {
 bot.on('message', (data) => {
 
   if (data.type === 'message' && data.text.includes('<@UB25RGRGS>')) {
-    handleMessage(data.text)
-    console.log(data);
+    handleMessage(data)
   }
   // if (data.type === "desktop_notification") {
   //   let text = data.content
