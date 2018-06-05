@@ -8,9 +8,9 @@ const settings = {
   name: 'Catfacts'
 }
 
+const bot = new Bot(settings)
 const params = { icon_emoji: ':cf:'};
 const channel = 'testing'
-const bot = new Bot(settings)
 
 const openers = [
   '',
@@ -42,15 +42,15 @@ let randOpen = () => {
  return openers[Math.floor(Math.random()*openers.length)]
 }
 
-let randomFact = catFacts.random();
-let allFacts = catFacts.all;
+// available functions
+// catFacts.random();
+// catFacts.all;
 
 const getTime = () => {
   let time = new Date().toLocaleTimeString()
   let day = new Date().getDay()
-  // if ((time.includes('13:10')) && (day === 2)) {
   if ((time.includes('13:00')) && (day === 6)) {
-    bot.postMessageToGroup(channel, `Happy Caturday! ${randomFact}`, params)
+    bot.postMessageToGroup(channel, `Happy Caturday! ${catFacts.random()}`, params)
   }
 }
 
@@ -58,7 +58,7 @@ const handleMessage = (msg) => {
   if (msg.split(' ').length === 1) {
     bot.postMessageToGroup(channel, 'Meow?', params);
   } else if (msg.includes(' fact')) {
-    bot.postMessageToGroup(channel, randOpen() + randomFact, params);
+    bot.postMessageToGroup(channel, randOpen() + catFacts.random(), params);
   } else if (msg.includes(' help')) {
     bot.postMessageToGroup(channel, 'You can <@BB1EN3BNC> + "fact" to hear a random fact. Bot will also run every Sunday at 1PM.', params);
   } else {
@@ -118,3 +118,4 @@ bot.on('error', (err) => {
 // https://api.slack.com/events/app_mention
 // https://slackapi.github.io/node-slack-sdk/rtm_api
 // https://scotch.io/tutorials/building-a-slack-bot-with-node-js-and-chuck-norris-super-powers
+// https://blog.heroku.com/how-to-deploy-your-slack-bots-to-heroku
