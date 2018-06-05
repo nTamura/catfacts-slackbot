@@ -70,7 +70,7 @@ bot.on('start', () => {
   console.log('Catfacts server running');
   bot.postMessageToGroup(
     channel,
-    `You have been subscribed to @catfacts! ${randomFact}`,
+    `You have been subscribed to @catfacts! ${catFacts.random()}`,
      params
    );
   setInterval(getTime, 60000);
