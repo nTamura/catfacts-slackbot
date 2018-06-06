@@ -1,41 +1,43 @@
 require('dotenv').config()
+// available functions
+// catFacts.random();
+// catFacts.all;
 
 const Bot = require('slackbots')
 const catFacts = require('cat-facts');
-const openers = require('./openers');
+const openers = require('./openers.js');
 
 const settings = {
   token: process.env.TOKEN,
   name: 'Catfacts'
 }
 
-const bot = new Bot(settings)
 const params = {
   icon_emoji: ':cf:',
   link_names: true
 };
+const bot = new Bot(settings)
 const channel = 'testing'
 
-let randOpen = () => {
- return openers[Math.floor(Math.random()*openers.length)]
-}
-
-// available functions
-// catFacts.random();
-// catFacts.all;
+let randOpen = () => (openers[Math.floor(Math.random()*openers.length)])
 
 const getTime = () => {
+  // consider external lib instead.
   let time = new Date().toLocaleTimeString()
   let day = new Date().getDay()
   if ((time.includes('13:00')) && (day === 6)) {
-    bot.postMessageToGroup(channel, `Happy Caturday! ${catFacts.random()}`, params)
+    bot.postMessageToGroup(
+      channel,
+      `Happy Caturday! ${catFacts.random()}`,
+      params
+    )
   }
 }
 
 const handleMessage = (data) => {
   // console.log(data);
-  console.log(data.getUser() );
-  let userID = data.user
+  // console.log(data.getUser() );
+  // let userID = data.user
 
   // const postMessageToUserById = async (userID, 'message', params) => {
   //   const { channel: { id: channelID } } = await bot.openIm(userID);
@@ -46,21 +48,21 @@ const handleMessage = (data) => {
   // .then(() => {
   //   bot.postMessage(data.user, 'hi')
   // })
-  console.log(bot.getUsers());
+  // console.log(bot.getUsers());
 
   let msg = data.text
+
   if (msg.split(' ').length === 1) {
     bot.postMessageToGroup(channel, 'Meow?', params);
   } else if (msg.includes(' fact')) {
     bot.postMessageToGroup(channel, randOpen() + catFacts.random(), params);
   } else if (msg.includes(' dm')) {
-
+    bot.postMessageToGroup(channel, 'DM unavailable at this moment.', params);
     // bot.postMessageToUser(data.user, catFacts.random(), params);
-
-    bot.postMessageToUser(data.user, 'hi')
-      .always((data) => {
-        // console.log(data);
-    })
+    // bot.postMessageToUser(data.user, 'hi')
+    //   .always((data) => {
+    //     // console.log(data);
+    // })
   } else if (msg.includes(' help')) {
     bot.postMessageToGroup(channel, 'You can @catfacts + "fact" to hear a random fact. Bot will also run every Sunday at 1PM.', params);
   } else {
@@ -70,22 +72,19 @@ const handleMessage = (data) => {
 
 bot.on('start', () => {
   console.log('Catfacts server running');
-  bot.postMessageToGroup(
-    channel,
-    `You have been subscribed to @catfacts! ${catFacts.random()}`,
-     params
-   );
   setInterval(getTime, 60000);
-
+  // bot.postMessageToGroup(
+  //   channel,
+  //   `You have been subscribed to @catfacts! ${catFacts.random()}`,
+  //    params
+  //  );
   // console.log(bot.getUsers())
   // bot.postMessageToUser('ntamura', randomFact, params);
   // bot.postMessageToChannel('general', randomFact, params);
   // bot.postMessageToGroup('testing', randomFact, params);
 })
 
-
 bot.on('message', (data) => {
-
   if (data.type === 'message' && data.text.includes('<@UB25RGRGS>')) {
     handleMessage(data)
   }
@@ -101,18 +100,13 @@ bot.on('message', (data) => {
   //       default:
   //         console.log('default');
   //     }
-  //   } else {
-  //     console.log('error');
-  //   }
-  //
+  //   } else { console.log('error') }
   // }
 });
-
 
 bot.on('error', (err) => {
   console.log(err);
 })
-
 
 // references
 // https://code.tutsplus.com/articles/building-a-slack-bot-using-nodejs--cms-29444
